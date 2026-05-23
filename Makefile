@@ -15,8 +15,7 @@ define Package/luci-app-homer
   SUBMENU:=3. Applications
   TITLE:=Homer - A dead simple static homepage
   URL:=https://github.com/bastienwirtz/homer
-  DEPENDS:=+uhttpd +luci-base
-  HOST_BUILD_DEPENDS:=zip/host unzip/host
+  DEPENDS:=+uhttpd +luci-base +zip +unzip
 endef
 
 define Package/luci-app-homer/description
