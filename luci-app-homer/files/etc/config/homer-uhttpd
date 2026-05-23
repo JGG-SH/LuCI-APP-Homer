@@ -1,5 +1,0 @@
-config uhttpd 'homer'
-        list listen_http '0.0.0.0:8080'
-        option home '/www/homer'
-        option index_page 'index.html'
-        option no_dirlists '1'
