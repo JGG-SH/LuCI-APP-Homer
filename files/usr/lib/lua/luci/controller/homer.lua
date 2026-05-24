@@ -43,7 +43,7 @@ function action_manager()
                 local temp_dir = "/tmp/homer_extract"
                 os.execute('rm -rf ' .. temp_dir)
                 os.execute('mkdir -p ' .. temp_dir)
-                local cmd = 'unzip -q ' .. uploaded_file .. ' -d ' .. temp_dir
+                local cmd = '7z x ' .. uploaded_file .. ' -o' .. temp_dir
                 local ret = os.execute(cmd)
                 if ret == 0 then
                     -- 检测压缩包内第一层内容
