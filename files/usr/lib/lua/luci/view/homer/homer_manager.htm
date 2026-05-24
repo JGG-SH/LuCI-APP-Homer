@@ -59,7 +59,7 @@
  margin-bottom: 40px;
  }
  .homer-card {
- flex: 1;
+ flex:1;
  min-width: 260px;
  background: var(--homer-card-bg);
  border-radius: var(--homer-radius);
@@ -186,8 +186,8 @@
  <p><%:上传一个 homer.zip 文件（可以是本工具备份的，或从网上下载的主题包），将完全替换现有 Homer 目录。%></p>
  <div class="note"><%:⚠️ 注意：恢复会覆盖当前所有文件，建议先进行全套备份。%></div>
  <form method="post" enctype="multipart/form-data" action="/cgi-bin/homer_restore">
- <input type="file" name="restore_file" accept=".zip" required />
- <input type="submit" class="cbi-button cbi-button-apply" name="fullrestore" value="<%:恢复全套%>" />
+ <input type="file" name="archive" accept=".zip" required />
+ <input type="submit" class="cbi-button cbi-button-apply" value="<%:恢复全套%>" />
  </form>
  </div>
  </div>
