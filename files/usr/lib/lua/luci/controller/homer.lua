@@ -12,7 +12,7 @@ function action_manager()
     if http.formvalue("fullbackup") then
         local timestamp = os.date("%Y%m%d%H%M%S")
         local backup_file = "/tmp/Homer" .. timestamp .. ".zip"
-        local cmd = 'cd /www/homer && zip -r ' .. backup_file .. ' . -x "*.git*"'
+        local cmd = 'cd /www/homer && 7z a -tzip ' .. backup_file .. ' . -x "*.git*"'
         os.execute(cmd)
         if fs.access(backup_file) then
             http.header('Content-Type', 'application/zip')
