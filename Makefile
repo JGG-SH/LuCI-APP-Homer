@@ -15,11 +15,11 @@ define Package/luci-app-homer
   SUBMENU:=3. Applications
   TITLE:=Homer - A dead simple static homepage
   URL:=https://github.com/bastienwirtz/homer
-  DEPENDS:=+uhttpd +luci-base +7z +unzip
+  DEPENDS:=+uhttpd +luci-base +p7zip +unzip
 endef
 
 define Package/luci-app-homer/description
-  A dead simple static HOMepage for your servER to keep your services on hand, from a simple yaml configuration file.
+  A dead simple static HOMepage for your servER.
   This package integrates Homer into OpenWrt's LuCI interface.
 endef
 
@@ -40,7 +40,11 @@ define Package/luci-app-homer/install
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
 	$(CP) ./files/usr/lib/lua/luci/controller/homer.lua $(1)/usr/lib/lua/luci/controller/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/homer
-	$(CP) ./files/usr/lib/lua/luci/view/homer/homer_manager $(1)/usr/lib/lua/luci/view/homer/
+	$(CP) ./files/usr/lib/lua/luci/view/homer/homer_manager.htm $(1)/usr/lib/lua/luci/view/homer/
+
+	# 安装 homer_restore CGI 脚本（处理文件上传恢复）
+	$(INSTALL_DIR) $(1)/www/cgi-bin
+	$(INSTALL_BIN) ./files/www/cgi-bin/homer_restore $(1)/www/cgi-bin/
 
 	# 安装通用脚本 setup.sh（物理文件，复杂逻辑在这里）
 	$(INSTALL_DIR) $(1)/usr/lib/homer
