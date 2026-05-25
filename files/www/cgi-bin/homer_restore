@@ -1,152 +1,144 @@
 #!/usr/bin/lua
--- CGI: receive Homer zip upload and restore to /www/homer
--- ImmortalWrt compatible: luci.http.getfile() unavailable, use CGI instead
+
+-- Flush output helper
+local function send_output(s)
+    io.stdout:write(s)
+    io.stdout:flush()
+end
 
 local function die(msg, status)
     status = status or 500
-    local text = "Internal Server Error"
-    if status == 400 then text = "Bad Request"
-    elseif status == 405 then text = "Method Not Allowed" end
-    print("Status: " .. status .. " " .. text)
-    print("Content-Type: text/html\n")
-    print("<h1>Error</h1><p>" .. msg .. "</p>")
-    print('<p><a href="/cgi-bin/luci/admin/services/homer">Go back</a></p>')
+    local text = status == 400 and "Bad Request" or "Internal Server Error"
+    send_output("Status: " .. status .. " " .. text .. "\r\n")
+    send_output("Content-Type: text/html\r\n")
+    send_output("\r\n")
+    send_output("<h1>Error</h1><p>" .. msg .. "</p>")
+    send_output('<p><a href="/cgi-bin/luci/admin/services/homer">Go back</a></p>')
     os.exit(1)
 end
 
--- Only POST
-local method = os.getenv("REQUEST_METHOD") or "GET"
-if method ~= "POST" then
+if (os.getenv("REQUEST_METHOD") or "GET") ~= "POST" then
     die("Only POST allowed", 405)
 end
 
--- Read boundary from CONTENT_TYPE
-local ct = os.getenv("CONTENT_TYPE") or ""
-local boundary = ct:match("boundary=(.+)")
-if not boundary or boundary == "" then
+local clen = tonumber(os.getenv("CONTENT_LENGTH") or "0")
+if clen <= 0 then
+    die("Empty POST body", 400)
+end
+
+-- Read exactly clen bytes from stdin
+local raw = io.stdin:read(clen)
+if not raw or #raw == 0 then
+    die("Failed to read POST body", 400)
+end
+
+-- Debug: save raw for inspection
+local dbg = io.open("/tmp/homer_raw.bin", "w")
+dbg:write("LEN=" .. #raw .. "\n")
+dbg:write(raw:sub(1, 200):gsub("[^%w%p%s]", ".") .. "\n")
+dbg:close()
+
+-- Find boundary
+local ctype = os.getenv("CONTENT_TYPE") or ""
+local boundary = ctype:match("boundary=(.+)")
+if not boundary then
     die("Missing boundary in Content-Type", 400)
 end
 
--- Read CONTENT_LENGTH
-local cl = tonumber(os.getenv("CONTENT_LENGTH") or "0")
-if cl <= 0 then
-    die("Empty request body (CONTENT_LENGTH=0)", 400)
+-- Find file field
+local field_pos = raw:find('name="restore_file"', 1, true)
+if not field_pos then
+    field_pos = raw:find('name="archive"', 1, true)
 end
 
--- Read entire body from stdin
-local body = io.stdin:read(cl)
-if not body or #body == 0 then
-    die("Failed to read request body from stdin", 500)
+if not field_pos then
+    die("File field not found. Expected 'restore_file' or 'archive'.", 400)
 end
 
--- Parse multipart/form-data, extract file content
-local function parse_multipart(body, boundary)
-    -- Body parts are separated by "--" .. boundary
-    -- First part starts with "--" .. boundary .. "\r\n"
-    -- Last part ends with "--" .. boundary .. "--\r\n"
-    local sep = "--" .. boundary
-    local pos = 1
+-- Find end of headers (empty line)
+local header_end = raw:find("\r\n\r\n", field_pos, true)
+if not header_end then
+    die("Malformed multipart: no empty line after headers", 400)
+end
 
-    while pos <= #body do
-        -- Find next boundary
-        local s, e = body:find(sep, pos, true)
-        if not s then break end
+local file_start = header_end + 4
 
-        -- Check if this is the final boundary (ends with "--")
-        local after = body:sub(e + 1, e + 2)
-        if after == "--" then
-            break -- final boundary, done
-        end
+-- Find closing boundary
+local close1 = "\r\n--" .. boundary .. "--"
+local close2 = "\r\n--" .. boundary .. "\r\n"
 
-        -- After boundary should be "\r\n", then headers
-        if body:sub(e + 1, e + 2) ~= "\r\n" then
-            pos = e + 1
-            break
-        end
+local file_end = raw:find(close1, file_start, true)
+if not file_end then
+    file_end = raw:find(close2, file_start, true)
+end
 
-        local hdr_start = e + 3
-        local hdr_end = body:find("\r\n\r\n", hdr_start, true)
-        if not hdr_end then break end
+if not file_end then
+    die("Cannot find closing boundary", 500)
+end
 
-        local headers = body:sub(hdr_start, hdr_end - 1)
+-- Extract file content
+local file_content = raw:sub(file_start, file_end - 1)
 
-        -- Find next boundary (start of next part or end)
-        local next_s, next_e = body:find("\r\n" .. sep, hdr_end + 4, true)
-        local content
-        if next_s then
-            content = body:sub(hdr_end + 4, next_s - 1)
-        else
-            -- Try finding final boundary
-            local final_s, final_e = body:find("\r\n" .. sep .. "--", hdr_end + 4, true)
-            if final_s then
-                content = body:sub(hdr_end + 4, final_s - 1)
-            else
-                -- No next boundary found, read to end
-                content = body:sub(hdr_end + 4)
-            end
-        end
+-- Trim trailing \r\n
+while file_content:sub(-1) == "\r" or file_content:sub(-1) == "\n" do
+    file_content = file_content:sub(1, -2)
+end
 
-        -- Strip trailing \r\n from content
-        if content and #content >= 2 and content:sub(-2) == "\r\n" then
-            content = content:sub(1, -3)
-        end
+if #file_content == 0 then
+    die("File content is empty", 400)
+end
 
-        -- Check if this part has a file
-        local filename = headers:match('filename="(.-)"')
-        if filename and filename ~= "" then
-            return content, filename
-        end
-
-        pos = (next_s or final_s) and (next_s or final_s) + 1 or (s + 1)
+-- Check ZIP magic
+local magic = file_content:sub(1, 4)
+if magic ~= "PK\03\04" then
+    local hex = ""
+    for i = 1, 4 do
+        hex = hex .. string.format("%02X ", magic:byte(i) or 0)
     end
-
-    return nil
-end
-
-local file_data, filename = parse_multipart(body, boundary)
-if not file_data then
-    die("No file found in upload (check form field name)", 400)
+    die("Not a valid zip (magic: " .. hex .. ")", 400)
 end
 
 -- Save to temp file
-local tmp_zip = "/tmp/homer_restore.zip"
-local f = io.open(tmp_zip, "wb")
-if not f then die("Cannot create temp file: " .. tmp_zip, 500) end
-f:write(file_data)
+local tmp_path = "/tmp/homer_upload_" .. os.time() .. ".zip"
+local f = io.open(tmp_path, "wb")
+if not f then die("Cannot create temp file", 500) end
+f:write(file_content)
 f:close()
 
--- Verify it's a valid zip
-local ret_ok, ret_reason, ret_code = os.execute('7z t "' .. tmp_zip .. '" >/dev/null 2>&1')
-local valid = (ret_ok == "exit" and ret_code == 0)
-if not valid then
-    os.remove(tmp_zip)
-    die("Uploaded file is not a valid zip archive", 400)
-end
-
--- Backup current /www/homer
+-- Backup
 os.execute('rm -rf /www/homer_bak 2>/dev/null')
 os.execute('[ -d /www/homer ] && mv /www/homer /www/homer_bak')
 
--- Extract
+-- Extract using 7z
 os.execute('mkdir -p /www/homer')
-ret_ok, ret_reason, ret_code = os.execute('cd /www/homer && 7z x "' .. tmp_zip .. '" -y >/dev/null 2>&1')
-local extract_ok = (ret_ok == "exit" and ret_code == 0)
+local ok, exit_code, status_code = os.execute('cd /www/homer && 7z x "' .. tmp_path .. '" -y >/dev/null 2>&1')
 
-if not extract_ok then
-    -- Rollback
-    os.execute('rm -rf /www/homer')
-    os.execute('[ -d /www/homer_bak ] && mv /www/homer_bak /www/homer')
-    os.remove(tmp_zip)
-    die("Failed to extract zip archive", 500)
+-- Handle os.execute return values (Lua 5.1: returns true/false/nil, exit_code)
+local code = 0
+if type(ok) == "number" then
+    code = ok       -- Lua 5.2+ style
+elseif type(exit_code) == "number" then
+    code = exit_code
+elseif ok then
+    code = 0
+else
+    code = 1
 end
 
--- Success
-os.remove(tmp_zip)
+if code ~= 0 then
+    os.execute('rm -rf /www/homer')
+    os.execute('[ -d /www/homer_bak ] && mv /www/homer_bak /www/homer')
+    os.remove(tmp_path)
+    die("Failed to extract zip (code: " .. code .. ")", 500)
+end
+
+os.remove(tmp_path)
 os.execute('rm -rf /www/homer_bak 2>/dev/null')
 os.execute('chmod -R 755 /www/homer')
 
--- Redirect back to LuCI Homer page
-print("Status: 302 Found")
-print("Location: /cgi-bin/luci/admin/services/homer")
-print("Content-Type: text/html\n")
-print([[<html><head><meta http-equiv="refresh" content="0;url=/cgi-bin/luci/admin/services/homer"></head><body><script>window.location="/cgi-bin/luci/admin/services/homer"</script></body></html>]])
+-- Success: redirect
+send_output("Status: 302 Found\r\n")
+send_output("Location: /cgi-bin/luci/admin/services/homer\r\n")
+send_output("Content-Type: text/html\r\n")
+send_output("\r\n")
+send_output('<html><head><meta http-equiv="refresh" content="0;url=/cgi-bin/luci/admin/services/homer"></head><body><script>window.location="/cgi-bin/luci/admin/services/homer"</script></body></html>')
