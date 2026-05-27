@@ -1,204 +1,219 @@
 <%+header%>
 <style>
  :root {
- --homer-card-bg: #ffffff;
- --homer-border: #e9ecef;
- --homer-text: #2c3e50;
- --homer-text-muted: #6c757d;
- --homer-primary: #3b82f6;
- --homer-primary-dark: #2563eb;
- --homer-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.12);
- --homer-radius: 12px;
+  --homer-card-bg: #ffffff;
+  --homer-border: #e9ecef;
+  --homer-text: #2c3e50;
+  --homer-text-muted: #6c757d;
+  --homer-primary: var(--primary, #3b82f6);
+  --homer-primary-dark: var(--primary-dark, #2563eb);
+  --homer-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.12);
+  --homer-radius: 12px;
  }
  @media (prefers-color-scheme: dark) {
- :root {
- --homer-card-bg: #2d2d2d;
- --homer-border: #404040;
- --homer-text: #f0f0f0;
- --homer-text-muted: #b0b0b0;
- }
- }
- .homer-container, .homer-container * {
- font-weight: bold !important;
+  :root {
+   --homer-card-bg: #2d2d2d;
+   --homer-border: #404040;
+   --homer-text: #f0f0f0;
+   --homer-text-muted: #b0b0b0;
+  }
  }
  .homer-container {
- max-width: 1400px;
- margin: 0 auto;
- padding: 68px 24px 20px 24px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 0 20px 0;
  }
  .homer-header {
- margin-bottom: 28px;
+  margin-bottom: 20px; 
  }
  .homer-header h2 {
- font-size: 1.8rem;
- font-weight: bold !important;
- margin: 0 0 8px 0;
- color: var(--homer-text);
- letter-spacing: -0.3px;
+  font-size: 1.4rem;
+  font-weight: bold !important;
+  margin: 0 0 20px 0;
+  color: var(--homer-text);
+  letter-spacing: -0.3px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+ }
+ .homer-header h2 .from-text {
+  font-size: 1rem;
+  font-weight: normal !important;
+  color: var(--homer-text-muted);
  }
  .homer-header p {
- font-size: 1rem;
- color: var(--homer-text-muted);
- margin: 0 0 8px 0;
+  font-size: 1rem;
+  color: var(--homer-text-muted);
+  margin: 0 0 8px 0;
  }
  .homer-header .project-link {
- font-size: 0.9rem;
- margin-top: 8px;
+  font-size: 0.9rem;
+  margin-top: 0px;
+  margin-bottom: 0px;
  }
  .homer-header .project-link a {
- color: var(--homer-primary);
- text-decoration: none;
+  color: var(--homer-primary);
+  text-decoration: none;
  }
  .homer-header .project-link a:hover {
- text-decoration: underline;
+  text-decoration: underline;
  }
  .homer-cards {
- display: flex;
- gap: 24px;
- flex-wrap: wrap;
- margin-bottom: 40px;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
  }
+ /* 匹配 Lucky 的 fieldset 样式 */
  .homer-card {
- flex:1;
- min-width: 260px;
- background: var(--homer-card-bg);
- border-radius: var(--homer-radius);
- box-shadow: var(--homer-shadow);
- padding: 24px;
- transition: transform 0.2s, box-shadow 0.2s;
+  flex:1;
+  min-width: 260px;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: var(--homer-card-bg);
+  border: 1px solid var(--homer-border);
+  border-radius: var(--homer-radius);
+  box-shadow: var(--homer-shadow);
+  padding: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
  }
  .homer-card:hover {
- transform: translateY(-2px);
- box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
  }
  .homer-card h3 {
- font-size: 1.4rem;
- font-weight: bold !important;
- margin: 0 0 12px 0;
- border-left: 4px solid var(--homer-primary);
- padding-left: 14px;
- color: var(--homer-text);
+  font-size: 1.2rem;
+  font-weight: bold !important;
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--homer-border);
+  color: var(--homer-text);
  }
  .homer-card p {
- font-size: 0.9rem;
- line-height: 1.5;
- color: var(--homer-text-muted);
- margin-bottom: 16px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--homer-text-muted);
+  margin-bottom: 16px;
  }
  .homer-card .note {
- font-size: 0.8rem;
- color: var(--homer-primary);
- background: rgba(59,130,246,0.1);
- padding: 8px;
- border-radius: 6px;
- margin: 12px 0;
+  font-size: 0.8rem;
+  color: var(--homer-primary);
+  background: rgba(59,130,246,0.1);
+  padding: 8px;
+  border-radius: 6px;
+  margin: 12px 0;
  }
  .homer-card form {
- display: flex;
- flex-direction: column;
- gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
  }
  .homer-card input[type="file"] {
- background: var(--homer-card-bg);
- border: 1px solid var(--homer-border);
- border-radius: 8px;
- padding: 12px 10px;
- font-size: 0.95rem;
- color: var(--homer-text);
- cursor: pointer;
+  background: var(--homer-card-bg);
+  border: 1px solid var(--homer-border);
+  border-radius: 8px;
+  padding: 12px 10px;
+  font-size: 0.95rem;
+  color: var(--homer-text);
+  cursor: pointer;
+  max-width: 100%;
+  box-sizing: border-box;
  }
  .cbi-button-apply {
- background-color: var(--homer-primary) !important;
- border-color: var(--homer-primary) !important;
- border-radius: 8px !important;
- padding: 10px 18px !important;
- font-size: 0.95rem !important;
- font-weight: bold !important;
- transition: background 0.2s !important;
- cursor: pointer;
+  background-color: var(--homer-primary) !important;
+  border-color: var(--homer-primary) !important;
+  border-radius: 8px !important;
+  padding: 10px 18px !important;
+  font-size: 0.95rem !important;
+  font-weight: bold !important;
+  transition: background 0.2s !important;
+  cursor: pointer;
  }
  .cbi-button-apply:hover {
- background-color: var(--homer-primary-dark) !important;
+  background-color: var(--homer-primary-dark) !important;
  }
  .homer-preview {
- background: var(--homer-card-bg);
- border-radius: var(--homer-radius);
- box-shadow: var(--homer-shadow);
- overflow: hidden;
+  background: var(--homer-card-bg);
+  border-radius: var(--homer-radius);
+  box-shadow: var(--homer-shadow);
+  overflow: hidden;
  }
  .homer-preview-header {
- padding: 14px 24px;
- border-bottom: 1px solid var(--homer-border);
- font-weight: bold !important;
- font-size: 1rem;
- color: var(--homer-text);
- display: flex;
- justify-content: space-between;
- align-items: center;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--homer-border);
+  font-weight: bold !important;
+  font-size: 1rem;
+  color: var(--homer-text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
  }
  .homer-preview-header a {
- color: var(--homer-primary);
- text-decoration: none;
- font-size: 0.9rem;
- font-weight: bold !important;
+  color: var(--homer-primary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: bold !important;
  }
  .homer-preview-header a:hover {
- text-decoration: underline;
+  text-decoration: underline;
  }
  .homer-preview iframe {
- width: 100%;
- height: calc(100vh - 380px);
- min-height: 500px;
- border: none;
+  width: 100%;
+  height: calc(100vh - 380px);
+  min-height: 500px;
+  border: none;
  }
  @media (max-width: 768px) {
- .homer-container { padding: 48px 16px 12px 16px; }
- .homer-header h2 { font-size: 1.5rem; }
- .homer-cards { flex-direction: column; gap: 16px; }
- .homer-preview iframe { height: 65vh; min-height: 300px; }
+  .homer-container { padding: 0 16px 12px 16px; }
+  .homer-header h2 { font-size: 1.5rem; }
+  .homer-cards { flex-direction: column; gap: 16px; }
+  .homer-card { min-width: 0; }
+  .homer-preview iframe { height: 65vh; min-height: 300px; }
  }
 </style>
 
 <div class="homer-container">
- <div class="homer-header">
- <h2><%:Homer 个人导航页%></h2>
- <p><%:通过备份/恢复功能管理你的个人主页。支持整体打包为 zip 文件，或上传网上下载的 Homer 主题包。%></p>
- <div class="project-link">
- 📖 <%:项目主页：%> <a href="https://github.com/bastienwirtz/homer" target="_blank">https://github.com/bastienwirtz/homer</a><br>
- ⭐ <%:提示：你可以从项目源获取最新主题，或搜索社区分享的 homer.zip ,修改个人配置后上传。%>
- </div>
- </div>
+  <div class="homer-header">
+    <h2>
+      <%:Homer 个人导航页%>
+      <span class="from-text">（From：阿拉杰哥哥 JGG-SH）</span>
+    </h2>
+    <div class="project-link">
+      📖 <%:功能说明：本插件是承载简易网页文件的容器，具备zip格式的整包上传与备份功能，可通过修改各种主页主题模板为个人适用版本后上传，非常自由。%><br>
+      ⭐ <%:项目灵感：来源于将极简个人主页Github项目《Homer》移植到Openwrt使用——%> <a href="https://github.com/bastienwirtz/homer" target="_blank">https://github.com/bastienwirtz/homer</a>
+    </div>
+  </div>
 
- <div class="homer-cards">
- <!-- 全套备份 (zip) -->
- <div class="homer-card">
- <h3><%:💾 全套备份 (ZIP)%></h3>
- <p><%:将当前整个 Homer 页面（包括图标、背景、页面文件）打包为 zip 文件，便于完整保存或分享。%></p>
- <div class="note"><%:📦 生成的 zip 包可直接用于恢复，结构与网上常见 homer.zip 一致。%></div>
- <form method="post" action="/cgi-bin/luci/admin/services/homer">
- <input type="submit" class="cbi-button cbi-button-apply" name="fullbackup" value="<%:下载完整备份.zip%>" />
- </form>
- </div>
+  <div class="homer-cards">
+    <!-- 全套备份 (zip) -->
+    <div class="homer-card">
+      <h3><%:💾 全套备份 (ZIP)%></h3>
+        <p><%:将当前整个 Homer 页面（包括图标、背景、页面文件）打包为 zip 文件，便于完整保存或分享。%></p>
+        <div class="note"><%:📦 生成的 zip 包可直接用于恢复，结构与网上常见 homer.zip 一致。%></div>
+        <form method="post" action="/cgi-bin/luci/admin/services/homer">
+          <input type="submit" class="cbi-button cbi-button-apply" name="fullbackup" value="<%:下载完整备份.zip%>" />
+        </form>
+    </div>
 
- <!-- 全套恢复 (上传zip) -->
- <div class="homer-card">
- <h3><%:📦 恢复全套 (上传ZIP)%></h3>
- <p><%:上传一个 homer.zip 文件（可以是本工具备份的，或从网上下载的主题包），将完全替换现有 Homer 目录。%></p>
- <div class="note"><%:⚠️ 注意：恢复会覆盖当前所有文件，建议先进行全套备份。%></div>
- <form method="post" enctype="multipart/form-data" action="/cgi-bin/homer_restore">
- <input type="file" name="archive" accept=".zip" required />
- <input type="submit" class="cbi-button cbi-button-apply" value="<%:恢复全套%>" />
- </form>
- </div>
- </div>
+    <!-- 全套恢复 (上传zip) -->
+    <div class="homer-card">
+      <h3><%:📦 恢复全套 (上传ZIP)%></h3>
+        <p><%:上传一个 homer.zip 文件（可以是本工具备份的，或从网上下载的主题包），将完全替换现有 Homer 目录。%></p>
+        <div class="note"><%:⚠️ 注意：恢复会覆盖当前所有文件，建议先进行全套备份。%></div>
+        <form method="post" enctype="multipart/form-data" action="/cgi-bin/homer_restore">
+          <input type="file" name="archive" accept=".zip" required />
+          <input type="submit" class="cbi-button cbi-button-apply" value="<%:恢复全套%>" />
+        </form>
+    </div>
+  </div>
 
- <div class="homer-preview">
- <div class="homer-preview-header">
- <span>🔍 <%:实时预览%></span>
- <a href="/homer/" target="_blank">🚀 <%:全屏打开 Homer%></a>
- </div>
- <iframe src="/homer/" title="Homer Preview"></iframe>
- </div>
+  <div class="homer-preview">
+    <div class="homer-preview-header">
+      <span>🔍 <%:实时预览%></span>
+      <a href="/homer/" target="_blank">🚀 <%:全屏打开 Homer%></a>
+    </div>
+    <iframe src="/homer/" title="Homer Preview"></iframe>
+  </div>
 </div>
 
 <%+footer%>
