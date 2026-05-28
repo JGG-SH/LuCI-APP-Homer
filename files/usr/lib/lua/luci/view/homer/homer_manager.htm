@@ -7,7 +7,7 @@
   --homer-text-muted: #6c757d;
   --homer-primary: var(--primary, #3b82f6);
   --homer-primary-dark: var(--primary-dark, #2563eb);
-  --homer-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.12);
+  --homer-shadow: 0 1px 3px rgba(0,0,0,0.08);
   --homer-radius: 12px;
  }
  @media (prefers-color-scheme: dark) {
@@ -18,18 +18,26 @@
    --homer-text-muted: #b0b0b0;
   }
  }
+ /* 顶到边界：覆盖 LuCI 主容器的默认 padding */
  .homer-container {
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 0 0 20px 0;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 0 20px 0 !important;
  }
- .homer-header {
-  margin-bottom: 20px;
+ /* 强制顶到左右边界 */
+ .homer-header,
+ .homer-cards,
+ .homer-preview {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
  }
+ .homer-header { margin-bottom: 16px; }
  .homer-header h2 {
   font-size: 1.4rem;
   font-weight: bold !important;
-  margin: 0 0 20px 0;
+  margin: 0 0 12px 0;
   color: var(--homer-text);
   letter-spacing: -0.3px;
   display: flex;
@@ -41,11 +49,6 @@
   font-weight: normal !important;
   color: var(--homer-text-muted);
  }
- .homer-header p {
-  font-size: 1rem;
-  color: var(--homer-text-muted);
-  margin: 0 0 8px 0;
- }
  .homer-header .project-link {
   font-size: 0.9rem;
   margin-top: 0px;
@@ -55,78 +58,104 @@
   color: var(--homer-primary);
   text-decoration: none;
  }
- .homer-header .project-link a:hover {
-  text-decoration: underline;
- }
  .homer-cards {
   display: flex;
-  gap: 24px;
-  flex-wrap: wrap;
+  gap: 20px;
+  flex-wrap: nowrap;
   margin-bottom: 24px;
  }
  .homer-card {
-  flex:1;
-  min-width: 260px;
+  flex: 1;
+  min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
   background: var(--homer-card-bg);
   border: 1px solid var(--homer-border);
   border-radius: var(--homer-radius);
   box-shadow: var(--homer-shadow);
-  padding: 10px;
-  transition: transform 0.2s, box-shadow 0.2s;
- }
- .homer-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  padding: 14px 16px 12px 16px;
+  display: flex;
+  flex-direction: column;
  }
  .homer-card h3 {
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   font-weight: bold !important;
-  margin: 0 0 12px 0;
-  padding-bottom: 8px;
+  margin: 0 0 8px 0;
+  padding-bottom: 6px;
   border-bottom: 1px solid var(--homer-border);
   color: var(--homer-text);
+  text-align: center;  /* 左右居中 */
  }
  .homer-card p {
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 0.82rem;
+  line-height: 1.4;
   color: var(--homer-text-muted);
-  margin-bottom: 16px;
+  margin-bottom: 8px;
  }
  .homer-card .note {
-  font-size: 0.8rem;
+  font-size: 0.73rem;
   color: var(--homer-primary);
   background: rgba(59,130,246,0.1);
-  padding: 8px;
+  padding: 5px 8px;
   border-radius: 6px;
-  margin: 12px 0;
+  margin: 6px 0;
+  line-height: 1.3;
  }
  .homer-card form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
+  margin-top: auto;
  }
- .homer-card input[type="file"] {
+ .port-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+ }
+ .port-row .port-input {
+  flex: 1;
+  min-width: 0;
+ }
+ .port-row .port-display {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+ }
+ .port-row .port-display span {
+  font-size: 0.82rem;
+  color: var(--homer-primary);
+  /* 不加粗 */
+  font-weight: normal;
+  text-align: center;
+ }
+ .homer-card input[type="text"] {
+  width: 100%;
   background: var(--homer-card-bg);
   border: 1px solid var(--homer-border);
   border-radius: 8px;
-  padding: 12px 10px;
-  font-size: 0.95rem;
+  padding: 9px 10px;
+  font-size: 0.88rem;
   color: var(--homer-text);
-  cursor: pointer;
-  max-width: 100%;
   box-sizing: border-box;
+ }
+ .homer-card input[type="file"] {
+  font-size: 0.82rem;
+  color: var(--homer-text-muted);
+  margin-bottom: 2px;
  }
  .cbi-button-apply {
   background-color: var(--homer-primary) !important;
   border-color: var(--homer-primary) !important;
   border-radius: 8px !important;
-  padding: 10px 18px !important;
-  font-size: 0.95rem !important;
+  padding: 8px 16px !important;
+  font-size: 0.88rem !important;
   font-weight: bold !important;
   transition: background 0.2s !important;
   cursor: pointer;
+  width: 100%;
  }
  .cbi-button-apply:hover {
   background-color: var(--homer-primary-dark) !important;
@@ -136,13 +165,13 @@
   border-radius: var(--homer-radius);
   box-shadow: var(--homer-shadow);
   overflow: hidden;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16/10;
  }
  .homer-preview-header {
-  padding: 14px 24px;
+  padding: 12px 20px;
   border-bottom: 1px solid var(--homer-border);
   font-weight: bold !important;
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--homer-text);
   display: flex;
   justify-content: space-between;
@@ -151,7 +180,7 @@
  .homer-preview-header a {
   color: var(--homer-primary);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: bold !important;
  }
  .homer-preview-header a:hover {
@@ -164,55 +193,91 @@
   display: block;
  }
  @media (max-width: 768px) {
-  .homer-container { padding: 0 16px 12px 16px; }
-  .homer-header h2 { font-size: 1.5rem; }
-  .homer-cards { flex-direction: column; gap: 16px; }
-  .homer-card { min-width: 0; }
-  .homer-preview { aspect-ratio: 4 / 3; }
+  .homer-cards {
+   flex-direction: column;
+   flex-wrap: wrap;
+   gap: 16px;
+  }
+  .homer-card {
+   min-width: 0;
+  }
+  .homer-preview {
+   aspect-ratio: 4/3;
+  }
  }
 </style>
 
+<%
+    local homer_port = homer_port or nil
+    local router_ip = router_ip or "192.168.1.1"
+    local fullscreen_url = "http://localhost/homer/"
+    local preview_src = "/homer/"
+    if homer_port and homer_port ~= "" then
+        fullscreen_url = "http://localhost:" .. homer_port .. "/"
+        preview_src = "http://" .. router_ip .. ":" .. homer_port .. "/"
+    end
+%>
+
 <div class="homer-container">
   <div class="homer-header">
-    <h2>
-      <%:Homer 个人导航页%>
-      <span class="from-text">（From：阿拉杰哥哥 JGG-SH）</span>
-    </h2>
+    <h2><%:Homer 个人导航页%><span class="from-text">（From：阿拉杰哥哥 JGG-SH）</span></h2>
     <div class="project-link">
-      📖 <%:功能说明：本插件是承载简易网页文件的容器，具备zip格式的整包上传与备份功能，可通过修改各种主页主题模板为个人适用版本后上传，非常自由。%><br>
-      ⭐ <%:项目灵感：来源于将极简个人主页Github项目《Homer》移植到Openwrt使用——%> <a href="https://github.com/bastienwirtz/homer" target="_blank">https://github.com/bastienwirtz/homer</a>
+      📖 <%:本插件是承载简易网页文件的容器，具备zip格式的整包上传与备份功能。%><br>
+      ⭐ <%:项目灵感：来源于 Github 项目《Homer》——%> <a href="https://github.com/bastienwirtz/homer" target="_blank">https://github.com/bastienwirtz/homer</a>
     </div>
   </div>
 
   <div class="homer-cards">
-    <!-- 全套备份 (zip) -->
+    <!-- 卡片1：全套备份 -->
     <div class="homer-card">
-      <h3><%:💾 全套备份 (ZIP)%></h3>
-        <p><%:将当前整个 Homer 页面（包括图标、背景、页面文件）打包为 zip 文件，便于完整保存或分享。%></p>
-        <div class="note"><%:📦 生成的 zip 包可直接用于恢复，结构与网上常见 homer.zip 一致。%></div>
-        <form method="post" action="/cgi-bin/luci/admin/services/homer">
-          <input type="submit" class="cbi-button cbi-button-apply" name="fullbackup" value="<%:下载完整备份.zip%>" />
-        </form>
+      <h3><%:💾 全套备份 (ZIP包)%></h3>
+      <p><%:将当前整个 Homer 页文件打包为 zip 包，便于完整保存和分享。%></p>
+      <div class="note"><%:📦 生成的 zip 包可直接用于恢复，结构与网上常见 homer.zip 一致。%></div>
+      <form method="post" action="/cgi-bin/luci/admin/services/homer">
+        <input type="submit" class="cbi-button cbi-button-apply" name="fullbackup" value="<%:下载完整备份%>" />
+      </form>
     </div>
 
-    <!-- 全套恢复 (上传zip) -->
+    <!-- 卡片2：全套上传 -->
     <div class="homer-card">
-      <h3><%:📦 恢复全套 (上传ZIP)%></h3>
-        <p><%:上传一个 homer.zip 文件（可以是本工具备份的，或从网上下载的主题包），将完全替换现有 Homer 目录。%></p>
-        <div class="note"><%:⚠️ 注意：恢复会覆盖当前所有文件，建议先进行全套备份。%></div>
-        <form method="post" enctype="multipart/form-data" action="/cgi-bin/homer_restore">
-          <input type="file" name="archive" accept=".zip" required />
-          <input type="submit" class="cbi-button cbi-button-apply" value="<%:恢复全套%>" />
-        </form>
+      <h3><%:📦 全套上传 (ZIP包)%></h3>
+      <p><%:上传 homer.zip 文件，将完全自动解包并替换现有 Homer 目录。%></p>
+      <div class="note"><%:⚠️ 注意：恢复会覆盖当前所有文件，建议上传前先行备份。%></div>
+      <form method="post" enctype="multipart/form-data" action="/cgi-bin/homer_restore">
+        <input type="file" name="archive" accept=".zip" required style="margin-bottom:4px;" />
+        <input type="submit" class="cbi-button cbi-button-apply" value="<%:全套上传%>" />
+      </form>
+    </div>
+
+    <!-- 卡片3：设置端口 -->
+    <div class="homer-card">
+      <h3><%:🔧 设置端口%></h3>
+      <p><%:为 Homer 设置独立访问端口，通过 http://本地IP:端口 访问，方便反代穿透到外网。%></p>
+      <div class="note"><%:💡 建议选择复杂端口（如 18365、28810），避免冲突并提升安全性。%></div>
+      <form method="post" action="/cgi-bin/luci/admin/services/homer">
+        <div class="port-row">
+          <div class="port-input">
+            <input type="text" name="port" placeholder="<%= homer_port or "18365" %>" pattern="[0-9]+" title="请输入数字端口号" />
+          </div>
+          <div class="port-display">
+            <% if homer_port and homer_port ~= "" then %>
+            <span><%:当前端口：%><%= homer_port %></span>
+            <% else %>
+            <span><%:尚未设置端口%></span>
+            <% end %>
+          </div>
+        </div>
+        <input type="submit" class="cbi-button cbi-button-apply" name="setport" value="<%:确认端口%>" />
+      </form>
     </div>
   </div>
 
   <div class="homer-preview">
     <div class="homer-preview-header">
       <span>🔍 <%:实时预览%></span>
-      <a href="/homer/" target="_blank">🚀 <%:全屏打开 Homer%></a>
+      <a href="<%= fullscreen_url %>" target="_blank">🚀 <%:全屏打开 Homer%></a>
     </div>
-    <iframe src="/homer/" title="Homer Preview"></iframe>
+    <iframe src="<%= preview_src %>" title="Homer Preview"></iframe>
   </div>
 </div>
 
