@@ -66,7 +66,7 @@
   margin-bottom: 24px;
  }
  .homer-card {
-  flex:1;
+  flex: 1;
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
@@ -128,7 +128,6 @@
  .port-row .port-display span {
   font-size: 0.82rem;
   color: var(--homer-primary);
-  /* 不加粗 */
   font-weight: normal;
   text-align: center;
  }
@@ -166,7 +165,6 @@
   border-radius: var(--homer-radius);
   box-shadow: var(--homer-shadow);
   overflow: hidden;
-  /* 桌面端：横屏比例 */
   aspect-ratio: 16/10;
  }
  .homer-preview-header {
@@ -203,11 +201,9 @@
   .homer-card {
    min-width: 0;
   }
-  /* 手机端：竖屏比例 */
   .homer-preview {
    aspect-ratio: 9/16;
   }
-  /* 手机端：标题和来源上下分行 */
   .homer-header h2 {
    flex-direction: column;
    align-items: flex-start;
@@ -221,11 +217,23 @@
 
 <%
     local homer_port = homer_port or nil
-    local router_ip = router_ip or "192.168.1.1"
-    local fullscreen_url = "http://localhost/homer/"
+    local router_ip = router_ip or "192.168.10.1"
+
+    -- FIX: 防御 router_ip 为 table 的情况
+    if type(router_ip) == "table" then
+        for _, v in ipairs(router_ip) do
+            router_ip = tostring(v)
+            break
+        end
+    end
+    router_ip = tostring(router_ip)
+
+    -- 全屏链接也改用路由器 IP（不再是 localhost）
+    local fullscreen_url = "http://" .. router_ip .. "/homer/"
     local preview_src = "/homer/"
+
     if homer_port and homer_port ~= "" then
-        fullscreen_url = "http://localhost:" .. homer_port .. "/"
+        fullscreen_url = "http://" .. router_ip .. ":" .. homer_port .. "/"
         preview_src = "http://" .. router_ip .. ":" .. homer_port .. "/"
     end
 %>
