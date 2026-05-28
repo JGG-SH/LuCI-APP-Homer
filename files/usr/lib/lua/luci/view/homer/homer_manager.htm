@@ -43,6 +43,7 @@
   display: flex;
   align-items: baseline;
   gap: 12px;
+  flex-wrap: wrap;
  }
  .homer-header h2 .from-text {
   font-size: 0.9rem;
@@ -65,7 +66,7 @@
   margin-bottom: 24px;
  }
  .homer-card {
-  flex: 1;
+  flex:1;
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
@@ -205,6 +206,15 @@
   /* 手机端：竖屏比例 */
   .homer-preview {
    aspect-ratio: 9/16;
+  }
+  /* 手机端：标题和来源上下分行 */
+  .homer-header h2 {
+   flex-direction: column;
+   align-items: flex-start;
+   gap: 4px;
+  }
+  .homer-header h2 .from-text {
+   font-size: 0.85rem;
   }
  }
 </style>
