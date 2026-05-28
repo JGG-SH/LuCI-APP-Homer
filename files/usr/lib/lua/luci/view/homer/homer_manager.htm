@@ -24,7 +24,7 @@
   padding: 0 0 20px 0;
  }
  .homer-header {
-  margin-bottom: 20px; 
+  margin-bottom: 20px;
  }
  .homer-header h2 {
   font-size: 1.4rem;
@@ -64,7 +64,6 @@
   flex-wrap: wrap;
   margin-bottom: 24px;
  }
- /* 匹配 Lucky 的 fieldset 样式 */
  .homer-card {
   flex:1;
   min-width: 260px;
@@ -137,6 +136,7 @@
   border-radius: var(--homer-radius);
   box-shadow: var(--homer-shadow);
   overflow: hidden;
+  aspect-ratio: 16 / 10;
  }
  .homer-preview-header {
   padding: 14px 24px;
@@ -159,16 +159,16 @@
  }
  .homer-preview iframe {
   width: 100%;
-  height: calc(100vh - 380px);
-  min-height: 500px;
+  height: 100%;
   border: none;
+  display: block;
  }
  @media (max-width: 768px) {
   .homer-container { padding: 0 16px 12px 16px; }
   .homer-header h2 { font-size: 1.5rem; }
   .homer-cards { flex-direction: column; gap: 16px; }
   .homer-card { min-width: 0; }
-  .homer-preview iframe { height: 65vh; min-height: 300px; }
+  .homer-preview { aspect-ratio: 4 / 3; }
  }
 </style>
 
